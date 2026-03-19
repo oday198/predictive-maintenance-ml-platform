@@ -1,16 +1,36 @@
+from core.config import settings
+import sqlite3
 import requests
 import time
 import random
 import threading
-import json
 from datetime import datetime
 from rich.console import Console
 from rich.table import Table
 from rich.live import Live
 
-API_URL = "http://localhost:8000/predict"
-NUM_MACHINES = 5
-ALERT_THRESHOLD = 0.6
+def init_database():
+    conn = sqlite3.connect("events.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            timestamp TEXT,
+            machine_id INTEGER,
+            tool_wear REAL,
+            ml_probability REAL,
+            risk_score REAL,
+            event_type TEXT
+        )
+    """)
+
+    conn.commit()
+    conn.close()
+
+API_URL = settings.API_URL
+NUM_MACHINES = settings.NUM_MACHINES
+ALERT_THRESHOLD = settings.ALERT_THRESHOLD
 
 console = Console()
 
@@ -20,20 +40,29 @@ lock = threading.Lock()
 
 # ✅ Event persistence
 def persist_event(machine_id, tool_wear, probability, risk_score):
-    event = {
-        "timestamp": datetime.utcnow().isoformat(),
-        "machine_id": machine_id,
-        "tool_wear": tool_wear,
-        "ml_probability": probability,
-        "risk_score": risk_score,
-        "event_type": "CRITICAL_FAILURE"
-    }
+    conn = sqlite3.connect(settings.DB_PATH)
+    cursor = conn.cursor()
 
-    try:
-        with open("events_log.json", "a") as f:
-            f.write(json.dumps(event) + "\n")
-    except Exception as e:
-        console.print(f"[red]Error writing event log: {e}[/red]")
+    cursor.execute("""
+        INSERT INTO events (
+            timestamp,
+            machine_id,
+            tool_wear,
+            ml_probability,
+            risk_score,
+            event_type
+        ) VALUES (?, ?, ?, ?, ?, ?)
+    """, (
+        datetime.utcnow().isoformat(),
+        machine_id,
+        tool_wear,
+        probability,
+        risk_score,
+        "CRITICAL_FAILURE"
+    ))
+
+    conn.commit()
+    conn.close()
 
 
 class Machine:
@@ -178,4 +207,5 @@ def start_simulation():
 
 
 if __name__ == "__main__":
+    init_database()
     start_simulation()

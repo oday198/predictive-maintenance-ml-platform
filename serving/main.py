@@ -1,3 +1,5 @@
+import sqlite3
+from core.config import settings
 import json
 import os
 import mlflow
@@ -116,8 +118,26 @@ def predict(data: MachineData):
 @app.get("/events")
 def get_events():
     try:
-        with open("simulation/events_log.json", "r") as f:
-            events = [json.loads(line) for line in f.readlines()]
+        conn = sqlite3.connect(settings.DB_PATH)
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT timestamp, machine_id, tool_wear, ml_probability, risk_score, event_type FROM events")
+        rows = cursor.fetchall()
+
+        conn.close()
+
+        events = []
+        for row in rows:
+            events.append({
+                "timestamp": row[0],
+                "machine_id": row[1],
+                "tool_wear": row[2],
+                "ml_probability": row[3],
+                "risk_score": row[4],
+                "event_type": row[5]
+            })
+
         return {"events": events}
-    except FileNotFoundError:
-        return {"events": []}
+
+    except Exception as e:
+        return {"error": str(e)}
