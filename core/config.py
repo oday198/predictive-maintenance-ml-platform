@@ -12,7 +12,7 @@ class Settings:
     ALERT_THRESHOLD = float(os.getenv("ALERT_THRESHOLD", 0.6))
 
     # Database
-    DB_PATH = os.getenv("DB_PATH", "simulation/events.db")
+    DB_PATH = os.getenv("DB_PATH", "events.db")
 
 
 settings = Settings()

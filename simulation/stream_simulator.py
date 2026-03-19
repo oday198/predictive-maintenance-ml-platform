@@ -10,7 +10,7 @@ from rich.table import Table
 from rich.live import Live
 
 def init_database():
-    conn = sqlite3.connect("events.db")
+    conn = sqlite3.connect(settings.DB_PATH)
     cursor = conn.cursor()
 
     cursor.execute("""
