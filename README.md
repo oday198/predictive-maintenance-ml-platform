@@ -21,6 +21,18 @@ The system is built with production-oriented architecture principles rather than
 
 ---
 
+## 📸 System Preview
+
+### Live Fleet Monitoring Dashboard
+![Fleet Dashboard](assets/dashboard.png)
+
+### REST API Documentation
+![Swagger Docs](assets/docs.png)
+
+### Event Retrieval Endpoint
+![Events Endpoint](assets/events.png)
+
+
 ## 🏗 System Architecture
 
         +-----------------------+
