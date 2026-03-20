@@ -45,11 +45,7 @@ async def log_requests(request: Request, call_next):
 # ✅ Load model from local mlruns folder (for Docker deployment)
 MODEL_PATH = os.path.join(
     os.path.dirname(os.path.dirname(__file__)),
-    "mlruns",
-    "1",
-    "models",
-    "m-b518c9b97c1e492684118463ec1d9c2e",
-    "artifacts"
+    "model_export"
 )
 
 model = mlflow.xgboost.load_model(MODEL_PATH)
