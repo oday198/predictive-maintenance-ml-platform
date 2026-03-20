@@ -119,3 +119,21 @@ This simulates realistic industrial monitoring behavior where AI is integrated w
 
 ```bash
 docker build -t predictive-maintenance-api .
+
+
+## 🌍 Live Deployment
+
+This service is deployed on AWS EC2.
+
+Public endpoints:
+
+- /health
+- /predict
+- /events
+- /docs
+
+Deployment includes:
+
+- Docker container
+- SQLite persistent volume
+- Public security group configurationg
